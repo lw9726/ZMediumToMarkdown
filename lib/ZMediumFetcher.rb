@@ -150,16 +150,29 @@ class ZMediumFetcher
         postInfo = Post.parsePostInfoFromPostContent(postContent, postID, imagePathPolicy)
         contentInfo = Post.fetchPostParagraphs(postID)
         
-        if contentInfo.nil?
-            raise "Error: Paragraph Content not found! PostURL: #{postURL}"
+        #if contentInfo.nil?
+        #    raise "Error: Paragraph Content not found! PostURL: #{postURL}"
+        #end 
+
+        if contentInfo.nil? || contentInfo.empty?
+            raise "Error: Content info is empty or nil! PostURL: #{postURL}"
         end 
 
-        isLockedPreviewOnly = contentInfo&.dig("isLockedPreviewOnly")
+        '''isLockedPreviewOnly = contentInfo&.dig("isLockedPreviewOnly")
 
         sourceParagraphs = contentInfo&.dig("bodyModel", "paragraphs")
 
         if sourceParagraphs.nil?
             raise "Error: Paragraph not found! PostURL: #{postURL}"
+        end 
+        '''
+
+        isLockedPreviewOnly = contentInfo.is_a?(Hash) ? contentInfo.dig("isLockedPreviewOnly") : false
+
+        sourceParagraphs = contentInfo.is_a?(Hash) ? contentInfo.dig("bodyModel", "paragraphs") : nil
+
+        if sourceParagraphs.nil?
+            raise "Error: Paragraphs not found! PostURL: #{postURL}"
         end 
         
         progress.message = "Formatting Data..."
